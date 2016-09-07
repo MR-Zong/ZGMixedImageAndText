@@ -232,7 +232,7 @@ NSString * const ZGTapAttributeName = @"NSTapAttributeName";
     CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
     
     // Convert CT coordinates to line-relative coordinates
-//    NSLog(@"lineOrigin %@",NSStringFromCGPoint(point));
+    NSLog(@"lineOrigin %@",NSStringFromCGPoint(lineOrigin));
     CGFloat offsetX = 4;
     CGPoint relativePoint = CGPointMake(point.x - lineOrigin.x + offsetX, point.y - lineOrigin.y);
     CFIndex idx = CTLineGetStringIndexForPosition(line, relativePoint);

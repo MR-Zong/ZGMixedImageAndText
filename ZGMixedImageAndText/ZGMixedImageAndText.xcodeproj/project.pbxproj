@@ -522,6 +522,7 @@
 				EF489D0E1D800DE0005133C3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		EF489D0F1D800DE0005133C3 /* Build configuration list for PBXNativeTarget "ZGMixedImageAndTextTests" */ = {
 			isa = XCConfigurationList;
@@ -530,6 +531,7 @@
 				EF489D111D800DE0005133C3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		EF489D121D800DE0005133C3 /* Build configuration list for PBXNativeTarget "ZGMixedImageAndTextUITests" */ = {
 			isa = XCConfigurationList;
@@ -538,6 +540,7 @@
 				EF489D141D800DE0005133C3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
