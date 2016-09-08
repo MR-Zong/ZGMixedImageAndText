@@ -23,7 +23,7 @@
     
     
 //    @"大张伟音乐才华还是不错的，就是话太多，管不住嘴。" @"abcdefghijklmnopqrstuvwxyz"
-    NSMutableAttributedString *mAttributeContentString = [[NSMutableAttributedString alloc] initWithString:@"大张伟音乐才华还是不错的，就是话太多，管不住嘴。"  attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14]}];
+    NSMutableAttributedString *mAttributeContentString = [[NSMutableAttributedString alloc] initWithString:@"大张伟音乐才华还是不错的，就是话太多，管不住嘴。"];
     _urlLabel = [[ZGLabel alloc] init];
     _urlLabel.numberOfLines = 0;
     _urlLabel.frame = CGRectMake(10, 150, 300, 120);
