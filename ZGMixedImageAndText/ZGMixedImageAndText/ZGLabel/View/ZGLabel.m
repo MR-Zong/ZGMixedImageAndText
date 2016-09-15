@@ -12,16 +12,8 @@
 
 NSString * const ZGTapAttributeName = @"NSTapAttributeName";
 NSString * const ZGTapColorAttributeStateNormal = @"ZGTapColorAttributeStateNormal";
-NSString * const ZGTapColorAttributeStateHeightLight = @"ZGTapColorAttributeStateHeightLight";
+NSString * const ZGTapColorAttributeStateHighLighted = @"ZGTapColorAttributeStateHighLighted";
 
-
-@interface ZGAttributeModel : NSObject
-
-@property (nonatomic, strong) id value;
-@property (nonatomic, assign) NSRange range;
-+ (instancetype)attributeModelWithValue:(id)value range:(NSRange)range;
-
-@end
 
 @implementation ZGAttributeModel
 + (instancetype)attributeModelWithValue:(id)value range:(NSRange)range
@@ -36,9 +28,10 @@ NSString * const ZGTapColorAttributeStateHeightLight = @"ZGTapColorAttributeStat
 @interface ZGLabel () <UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) NSMutableDictionary *attributeDic;
-/**单击手势
- */
 @property(nonatomic,strong) UITapGestureRecognizer *tapGestureRecognizer;
+@property (nonatomic, strong) UILongPressGestureRecognizer *longGestureRecognizer;
+@property (nonatomic, assign) NSRange highlightedRange;
+
 
 @end
 
@@ -48,23 +41,35 @@ NSString * const ZGTapColorAttributeStateHeightLight = @"ZGTapColorAttributeStat
 {
     if (self = [super initWithFrame:frame]) {
         
-        self.userInteractionEnabled = YES;
-        _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-        _tapGestureRecognizer.delegate = self;
-        [self addGestureRecognizer:_tapGestureRecognizer];
-        
-        _attributeDic = [[NSMutableDictionary alloc] init];
-        
-        self.backgroundColor = [UIColor redColor];
+        [self initialize];
     }
     return self;
+}
+
+- (void)initialize
+{
+    self.highLightedColorEnable = YES;
+    self.userInteractionEnabled = YES;
+    _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+    _tapGestureRecognizer.delegate = self;
+    [self addGestureRecognizer:_tapGestureRecognizer];
+    
+    _longGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+    _longGestureRecognizer.delegate = self;
+    [self addGestureRecognizer:_longGestureRecognizer];
+    
+    
+    [_tapGestureRecognizer requireGestureRecognizerToFail:_longGestureRecognizer];
+    
+    _attributeDic = [[NSMutableDictionary alloc] init];
+    
+    self.backgroundColor = [UIColor redColor];
+
 }
 
 #pragma mark - setter
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
-//    NSLog(@"attributedText %@",attributedText);
-
     __block NSMutableAttributedString *mAttributeString = [[NSMutableAttributedString alloc] initWithAttributedString:attributedText];
     [attributedText enumerateAttribute:ZGTapAttributeName inRange:NSMakeRange(0, attributedText.string.length - 1) options:NSAttributedStringEnumerationReverse usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
         if (value) {
@@ -82,7 +87,7 @@ NSString * const ZGTapColorAttributeStateHeightLight = @"ZGTapColorAttributeStat
                     id value = self.tapAttribute[key];
                     if ([key isEqualToString:ZGTapColorAttributeStateNormal]) {
                         [mAttributeString addAttribute:NSForegroundColorAttributeName value:value range:range];
-                    }else if ([key isEqualToString:ZGTapColorAttributeStateHeightLight]){
+                    }else if ([key isEqualToString:ZGTapColorAttributeStateHighLighted]){
                         ;;
                     }
                 }
@@ -111,7 +116,7 @@ NSString * const ZGTapColorAttributeStateHeightLight = @"ZGTapColorAttributeStat
                         id value = self.tapAttribute[key];
                         if ([key isEqualToString:ZGTapColorAttributeStateNormal]) {
                             [mAttributeString addAttribute:NSForegroundColorAttributeName value:value  range:attributeModel.range];
-                        }else if ([key isEqualToString:ZGTapColorAttributeStateHeightLight]){
+                        }else if ([key isEqualToString:ZGTapColorAttributeStateHighLighted]){
                             ;;
                         }
                     }
@@ -127,7 +132,8 @@ NSString * const ZGTapColorAttributeStateHeightLight = @"ZGTapColorAttributeStat
 #pragma mark - UIGestureRecognizerDelegate
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-    return YES;
+    ZGAttributeModel *model = [self urlAtPoint:[touch locationInView:self]];
+    return model.range.location != NSNotFound;
 }
 
 - (void)handleTap:(UITapGestureRecognizer*) tap
@@ -140,11 +146,173 @@ NSString * const ZGTapColorAttributeStateHeightLight = @"ZGTapColorAttributeStat
     ZGAttributeModel *selectedModel = [self urlAtPoint:[tap locationInView:self]];
     
     if ( selectedModel && selectedModel.range.length > 0) {
-        NSLog(@"%@",selectedModel.value);
-        return;
+        if (self.delegate && [self.delegate respondsToSelector:@selector(label:didTapWithModel:)]) {
+            [self.delegate label:self didTapWithModel:selectedModel];
+        }
     }
     
 }
+
+
+
+#pragma mark- handleLongPress
+- (void)handleLongPress:(UILongPressGestureRecognizer*) longPress
+{
+    CGPoint point = [longPress locationInView:self];
+    switch (longPress.state)
+    {
+        case UIGestureRecognizerStateBegan :
+        {
+            ZGAttributeModel *model = [self urlAtPoint:point];
+            self.highlightedRange = model.range;
+            break;
+        }
+        case UIGestureRecognizerStateEnded :
+        {
+            ZGAttributeModel *model = [self urlAtPoint:point];
+            self.highlightedRange = NSMakeRange(NSNotFound, 0);
+            
+            if ( model && model.range.length > 0) {
+                if (self.delegate && [self.delegate respondsToSelector:@selector(label:didLongPressWithModel:)]) {
+                    [self.delegate label:self didLongPressWithModel:model];
+                }
+            }
+            break;
+        }
+        default:
+        {
+            self.highlightedRange = NSMakeRange(NSNotFound, 0);
+            break;
+        }
+    }
+    
+    [self setNeedsDisplay];
+    
+}
+
+
+- (void)drawRect:(CGRect)rect
+{
+    if (self.highLightedColorEnable == NO) {
+        [super drawRect:rect];
+        return;
+    }
+    
+    UIColor *highlightedBackgroundColor = _tapAttribute[@"ZGTapColorAttributeStateHighLighted"];
+    if (highlightedBackgroundColor  && _highlightedRange.length > 0) {
+        
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        CGFloat _highlightedBackgroundCornerRadius = 0;
+        
+        if(_highlightedRange.location != NSNotFound && _highlightedRange.length > 0)
+        {
+            CGMutablePathRef path = CGPathCreateMutable();
+            CGContextSetFillColorWithColor(context, highlightedBackgroundColor.CGColor);
+            NSArray *rects = [self rectsForRange:_highlightedRange];
+            for(NSString *rectStr in rects)
+            {
+                CGPathAddRoundedRect(path, NULL, CGRectFromString(rectStr), _highlightedBackgroundCornerRadius, _highlightedBackgroundCornerRadius);
+            }
+            
+            CGContextAddPath(context, path);
+            CGContextFillPath(context);
+            CGPathRelease(path);
+        }
+        
+    }
+    
+    [super drawRect:rect];
+}
+
+
+- (NSArray*)rectsForRange:(NSRange) range;
+{
+   
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef) self.attributedText);
+    
+    //开始绘制
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGRect bounds = self.bounds;
+    CGPathAddRect(path, NULL, bounds);
+     CGRect textBounds = bounds;
+    //文本框大小
+    CTFrameRef ctFrame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, 0), path, NULL);
+    
+    CFRelease(path);
+
+    
+    NSMutableArray *rects = [NSMutableArray array];
+    
+    CFArrayRef lines = CFRetain(CTFrameGetLines(ctFrame));
+    
+    NSInteger count = CFArrayGetCount(lines);
+    CGPoint lineOrigins[count];
+    CTFrameGetLineOrigins(ctFrame, CFRangeMake(0, 0), lineOrigins);
+    
+    for(NSInteger i = 0;i < count;i ++)
+    {
+        CTLineRef line = CFArrayGetValueAtIndex(lines, i);
+        CFRange lineRange = CTLineGetStringRange(line);
+        
+        NSRange innerRange = [self innerRangeBetweenOne:range andSecond:NSMakeRange(lineRange.location == kCFNotFound ? NSNotFound : lineRange.location, lineRange.length)];
+        
+        if(innerRange.location != NSNotFound && innerRange.length > 0)
+        {
+            CGFloat lineAscent;
+            CGFloat lineDescent;
+            CGFloat lineLeading;
+            
+            //获取文字排版
+            CTLineGetTypographicBounds(line, &lineAscent, &lineDescent, &lineLeading);
+            CGFloat startX = CTLineGetOffsetForStringIndex(line, innerRange.location, NULL);
+            CGFloat endX = CTLineGetOffsetForStringIndex(line, innerRange.location + innerRange.length, NULL);
+            
+            ///行末尾，但是末尾部分无法显示一个字，要占满
+            if(i != count - 1 && innerRange.location + innerRange.length == lineRange.length + lineRange.location)
+            {
+                endX = CGRectGetMaxX(textBounds);
+            }
+            
+            CGPoint lineOrigin = lineOrigins[i];
+            
+            CGRect rect = CGRectMake(lineOrigin.x + startX, self.bounds.size.height - lineOrigin.y - lineDescent, endX - startX, lineAscent + lineDescent + lineLeading);
+            
+            [rects addObject:NSStringFromCGRect(rect)];
+            
+        }else if(lineRange.location > range.location + range.length){
+            break;
+        }
+    }
+    
+    
+    return rects;
+}
+
+
+- (NSRange)innerRangeBetweenOne:(NSRange) one andSecond:(NSRange) second
+{
+    NSRange range = NSMakeRange(NSNotFound, 0);
+    
+    //交换
+    if(one.location > second.location)
+    {
+        NSRange tmp = one;
+        one = second;
+        second = tmp;
+    }
+    
+    if(second.location < one.location + one.length)
+    {
+        range.location = second.location;
+        
+        NSInteger end = MIN(one.location + one.length, second.location + second.length);
+        range.length = end - range.location;
+    }
+    
+    return range;
+}
+
+
 
 //获取点中的url
 - (ZGAttributeModel *)urlAtPoint:(CGPoint) point
@@ -280,11 +448,11 @@ NSString * const ZGTapColorAttributeStateHeightLight = @"ZGTapColorAttributeStat
     CTLineRef line = CFArrayGetValueAtIndex(lines, lineIndex);
     
     // Convert CT coordinates to line-relative coordinates
-    NSLog(@"lineOrigin %@",NSStringFromCGPoint(lineOrigin));
+//    NSLog(@"lineOrigin %@",NSStringFromCGPoint(lineOrigin));
     CGFloat offsetX = 4;
     CGPoint relativePoint = CGPointMake(point.x - lineOrigin.x + offsetX, point.y - lineOrigin.y);
     CFIndex idx = CTLineGetStringIndexForPosition(line, relativePoint);
-    NSLog(@"idx %zd",idx);
+//    NSLog(@"idx %zd",idx);
     // We should check if we are outside the string range
     CFIndex glyphCount = CTLineGetGlyphCount(line);
     CFRange stringRange = CTLineGetStringRange(line);

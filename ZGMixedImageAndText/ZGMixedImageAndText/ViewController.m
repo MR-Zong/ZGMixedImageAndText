@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "ZGLabel.h"
 
-@interface ViewController ()
+@interface ViewController () <ZGLabelDelegate>
 
 @property (nonatomic, strong) ZGLabel *urlLabel;
 
@@ -25,6 +25,7 @@
 //    @"大张伟音乐才华还是不错的，就是话太多，管不住嘴。" @"abcdefghijklmnopqrstuvwxyz"
     NSMutableAttributedString *mAttributeContentString = [[NSMutableAttributedString alloc] initWithString:@"大张伟音乐才华还是不错的，就是话太多，管不住嘴。"];
     _urlLabel = [[ZGLabel alloc] init];
+    _urlLabel.delegate = self;
     _urlLabel.numberOfLines = 0;
     _urlLabel.frame = CGRectMake(10, 150, 300, 60);
 //    _urlLabel.textAlignment = NSTextAlignmentCenter;
@@ -40,10 +41,23 @@
     _urlLabel.attributedText = mAttributeContentString;
     
     _urlLabel.tapAttribute = @{ZGTapColorAttributeStateNormal : [UIColor yellowColor],
-                               ZGTapColorAttributeStateHeightLight : [UIColor blueColor]
+                               ZGTapColorAttributeStateHighLighted : [UIColor purpleColor]
                                };
     [self.view addSubview:_urlLabel];
 }
+
+#pragma mark - ZGLabelDelegate
+- (void)label:(ZGLabel *)label didTapWithModel:(ZGAttributeModel *)model
+{
+    NSLog(@"tapGesture %@",model.value);
+}
+
+- (void)label:(ZGLabel *)label didLongPressWithModel:(ZGAttributeModel *)model
+{
+    NSLog(@"longPress %@",model.value);
+}
+
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
