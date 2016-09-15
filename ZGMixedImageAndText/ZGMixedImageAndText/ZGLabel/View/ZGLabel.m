@@ -11,6 +11,9 @@
 
 
 NSString * const ZGTapAttributeName = @"NSTapAttributeName";
+NSString * const ZGTapColorAttributeStateNormal = @"ZGTapColorAttributeStateNormal";
+NSString * const ZGTapColorAttributeStateHeightLight = @"ZGTapColorAttributeStateHeightLight";
+
 
 @interface ZGAttributeModel : NSObject
 
@@ -57,11 +60,12 @@ NSString * const ZGTapAttributeName = @"NSTapAttributeName";
     return self;
 }
 
-
+#pragma mark - setter
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
 //    NSLog(@"attributedText %@",attributedText);
 
+    __block NSMutableAttributedString *mAttributeString = [[NSMutableAttributedString alloc] initWithAttributedString:attributedText];
     [attributedText enumerateAttribute:ZGTapAttributeName inRange:NSMakeRange(0, attributedText.string.length - 1) options:NSAttributedStringEnumerationReverse usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
         if (value) {
             
@@ -71,10 +75,54 @@ NSString * const ZGTapAttributeName = @"NSTapAttributeName";
             }
             [tapAttributeNameArray addObject:[ZGAttributeModel attributeModelWithValue:value range:range]];
             [_attributeDic setObject:tapAttributeNameArray forKey:ZGTapAttributeName];
+            
+            
+            if (self.tapAttribute) {
+                for (NSString *key in self.tapAttribute.allKeys) {
+                    id value = self.tapAttribute[key];
+                    if ([key isEqualToString:ZGTapColorAttributeStateNormal]) {
+                        [mAttributeString addAttribute:NSForegroundColorAttributeName value:value range:range];
+                    }else if ([key isEqualToString:ZGTapColorAttributeStateHeightLight]){
+                        ;;
+                    }
+                }
+            }
+            
+            
         }
     }];
-    [super setAttributedText:attributedText];
+    
+    [super setAttributedText:mAttributeString.copy];
 }
+
+- (void)setTapAttribute:(NSDictionary *)tapAttribute
+{
+    _tapAttribute = tapAttribute;
+    
+    
+    NSMutableAttributedString *mAttributeString = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
+    if (_attributeDic) {
+        for (NSString *key in _attributeDic.allKeys) {
+            NSArray *tapAttributeNameArray = _attributeDic[key];
+            for (ZGAttributeModel *attributeModel in tapAttributeNameArray) {
+                
+                if (self.tapAttribute) {
+                    for (NSString *key in self.tapAttribute.allKeys) {
+                        id value = self.tapAttribute[key];
+                        if ([key isEqualToString:ZGTapColorAttributeStateNormal]) {
+                            [mAttributeString addAttribute:NSForegroundColorAttributeName value:value  range:attributeModel.range];
+                        }else if ([key isEqualToString:ZGTapColorAttributeStateHeightLight]){
+                            ;;
+                        }
+                    }
+                }
+            }
+        }
+        
+        [super setAttributedText:mAttributeString.copy];
+    }
+}
+
 
 #pragma mark - UIGestureRecognizerDelegate
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch

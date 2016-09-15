@@ -16,6 +16,7 @@
 		EF489CFD1D800DE0005133C3 /* ZGMixedImageAndTextTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EF489CFC1D800DE0005133C3 /* ZGMixedImageAndTextTests.m */; };
 		EF489D081D800DE0005133C3 /* ZGMixedImageAndTextUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = EF489D071D800DE0005133C3 /* ZGMixedImageAndTextUITests.m */; };
 		EF489D191D800E13005133C3 /* ZGLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = EF489D181D800E13005133C3 /* ZGLabel.m */; };
+		EFD59D581D83F4E7006119A5 /* LinkView.m in Sources */ = {isa = PBXBuildFile; fileRef = EFD59D571D83F4E7006119A5 /* LinkView.m */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,8 @@
 		EF489D091D800DE0005133C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EF489D171D800E13005133C3 /* ZGLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZGLabel.h; sourceTree = "<group>"; };
 		EF489D181D800E13005133C3 /* ZGLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZGLabel.m; sourceTree = "<group>"; };
+		EFD59D561D83F4E7006119A5 /* LinkView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinkView.h; sourceTree = "<group>"; };
+		EFD59D571D83F4E7006119A5 /* LinkView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinkView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +160,8 @@
 			children = (
 				EF489D171D800E13005133C3 /* ZGLabel.h */,
 				EF489D181D800E13005133C3 /* ZGLabel.m */,
+				EFD59D561D83F4E7006119A5 /* LinkView.h */,
+				EFD59D571D83F4E7006119A5 /* LinkView.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -295,6 +300,7 @@
 				EF489D191D800E13005133C3 /* ZGLabel.m in Sources */,
 				EF489CE71D800DE0005133C3 /* AppDelegate.m in Sources */,
 				EF489CE41D800DE0005133C3 /* main.m in Sources */,
+				EFD59D581D83F4E7006119A5 /* LinkView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

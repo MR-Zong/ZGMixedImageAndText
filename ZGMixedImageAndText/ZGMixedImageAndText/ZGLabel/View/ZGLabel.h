@@ -11,9 +11,12 @@
 
 UIKIT_EXTERN NSString * const ZGTapAttributeName;
 
+UIKIT_EXTERN NSString * const ZGTapColorAttributeStateNormal;
+UIKIT_EXTERN NSString * const ZGTapColorAttributeStateHeightLight;
+
 @interface ZGLabel : UILabel
 
 
-
+@property (nonatomic, copy) NSDictionary *tapAttribute;
 
 @end

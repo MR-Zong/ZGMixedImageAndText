@@ -26,17 +26,22 @@
     NSMutableAttributedString *mAttributeContentString = [[NSMutableAttributedString alloc] initWithString:@"大张伟音乐才华还是不错的，就是话太多，管不住嘴。"];
     _urlLabel = [[ZGLabel alloc] init];
     _urlLabel.numberOfLines = 0;
-    _urlLabel.frame = CGRectMake(10, 150, 300, 120);
-    _urlLabel.textAlignment = NSTextAlignmentCenter;
+    _urlLabel.frame = CGRectMake(10, 150, 300, 60);
+//    _urlLabel.textAlignment = NSTextAlignmentCenter;
     
-    NSRange keywordRange = [mAttributeContentString.string rangeOfString:@"lm"];
+    NSRange keywordRange = [mAttributeContentString.string rangeOfString:@"大张伟"];
     [mAttributeContentString addAttribute:ZGTapAttributeName
                                     value:@"username://www.baidu.com"
                                     range:keywordRange];
     
     
+    
     [mAttributeContentString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:17] range:NSMakeRange(0, mAttributeContentString.string.length)];
     _urlLabel.attributedText = mAttributeContentString;
+    
+    _urlLabel.tapAttribute = @{ZGTapColorAttributeStateNormal : [UIColor yellowColor],
+                               ZGTapColorAttributeStateHeightLight : [UIColor blueColor]
+                               };
     [self.view addSubview:_urlLabel];
 }
 
