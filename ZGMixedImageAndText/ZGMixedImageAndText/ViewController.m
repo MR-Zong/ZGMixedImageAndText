@@ -35,6 +35,11 @@
                                     value:@"username://www.baidu.com"
                                     range:keywordRange];
     
+    NSRange keywordRange2 = [mAttributeContentString.string rangeOfString:@"多"];
+    [mAttributeContentString addAttribute:ZGTapAttributeName
+                                    value:@"username://www.google.com"
+                                    range:keywordRange2];
+
     
     
     [mAttributeContentString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:17] range:NSMakeRange(0, mAttributeContentString.string.length)];
