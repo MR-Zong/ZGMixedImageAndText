@@ -198,7 +198,7 @@ NSString * const ZGTapColorAttributeStateHighLighted = @"ZGTapColorAttributeStat
         return;
     }
     
-    UIColor *highlightedBackgroundColor = _tapAttribute[@"ZGTapColorAttributeStateHighLighted"];
+    UIColor *highlightedBackgroundColor = _tapAttribute[ZGTapColorAttributeStateHighLighted];
     if (highlightedBackgroundColor  && _highlightedRange.length > 0) {
         
         CGContextRef context = UIGraphicsGetCurrentContext();

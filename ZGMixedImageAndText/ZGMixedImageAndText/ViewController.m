@@ -49,6 +49,7 @@
                                ZGTapColorAttributeStateHighLighted : [UIColor purpleColor]
                                };
     [self.view addSubview:_urlLabel];
+
 }
 
 #pragma mark - ZGLabelDelegate
